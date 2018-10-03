@@ -70,7 +70,7 @@ def flatten_awsret(aws_return: str) -> Dict:
         for k,v in d.items():
             t=type2delim(str(type(v)))
             print('key_name %s, value type %s' \
-                 % (k, type2delim(str(type(v)))))
+                 % (k, t))
 
             #If we're dealing with a list or dict, we need to descend.
             #  need a "descend iterator" that checks the type of the
@@ -78,9 +78,11 @@ def flatten_awsret(aws_return: str) -> Dict:
             if t in [',',':']:
                 if t==',':
                     for w in v:
-                        print(w)
+                        #print('list entry %s' % w)
+                        descend(w)
                 else:
-                     pass
+                    for vk, vv in v.items():
+                        descend(vv)
 
     d: dict=awsret2dict(aws_return)
     descend(d)
