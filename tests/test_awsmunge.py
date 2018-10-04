@@ -1,7 +1,7 @@
 import pytest
 
 from awsmunge import awsret2dict,flatten_awsret
-from data.ec2_describe_instances import x
+from data.ec2_describe_instances import x,y
 
 def test_awsmunge():
     assert type(awsret2dict(x))==dict

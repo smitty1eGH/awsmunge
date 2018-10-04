@@ -50,39 +50,58 @@ def flatten_awsret(aws_return: str) -> Dict:
              s=string
              i=integer
              d=datetime
+
+       What's tricky is that you don't descend a list the same way you
+         do a dict.
+       So the code gets clearer knowing that it starts with a dictionary,
+         then has a separate dispatcher pushing the thread of execution
+         to either a dictionary or a list handler.
     '''
     def type2delim(v_type: str) -> str:
         '''Return character based upon V_TYPE
+
+           'datetime':'d' shows up as str
         '''
-        print('v_type %s' % v_type)
+        #print('v_type %s' % v_type)
         try:
             type_dict={"<class 'list'>"  :','
                       ,"<class 'str'>"   :'s'
                       ,"<class 'dict'>"  :':'
-                      ,'datetime':'d'
-                      ,'int'     :'i'
+                      ,"<class 'int'>"   :'i'
                       }
         except:
-            print(v_type)
+            print("surpsise type in type2delim() => %s" % v_type)
         return type_dict[v_type]
 
-    def descend(input: Union[List,Dict,str,int]) -> None:
-        for k,v in d.items():
-            t=type2delim(str(type(v)))
-            print('key_name %s, value type %s' \
-                 % (k, t))
+    def _descend_dispatch(v: Union[Dict,List,str,int])->str:
+        '''Switch on the type of the input.
+        '''
+        t=type2delim(str(type(v)))
+        if t == ',':
+            _descend_list(v)
+        elif t == ':':
+            descend(v)
+        else:
+            pass
+        return t
 
-            #If we're dealing with a list or dict, we need to descend.
-            #  need a "descend iterator" that checks the type of the
-            #  container member and does key/value discrimination as required.
-            if t in [',',':']:
-                if t==',':
-                    for w in v:
-                        #print('list entry %s' % w)
-                        descend(w)
-                else:
-                    for vk, vv in v.items():
-                        descend(vv)
+    def _descend_list(alist: List)-> None:
+        '''Descend() will encounter a list. do that.
+        '''
+        for i,v in enumerate(alist):
+            t=_descend_dispatch(v)
+
+    def descend(d: Dict) -> None:
+        '''Descend a structure known to start as a dictionary.
+        '''
+        current=[]
+        t=''
+        for k,v in d.items():
+            t=_descend_dispatch(v)
+            if t in [",",":"]:
+                current.append('%s%s' % (k,t))
+        current.append('%s.%s' % (k,t))
+        print(''.join(current))
 
     d: dict=awsret2dict(aws_return)
     descend(d)

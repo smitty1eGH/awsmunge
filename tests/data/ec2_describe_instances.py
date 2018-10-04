@@ -162,3 +162,18 @@ x='''{
     'NextToken': 'string'
 }
 '''
+
+y='''{
+    'Reservations': [
+        {
+            'Groups': [
+                {
+                    'GroupName': 'string',
+                    'GroupId': 'string'
+                },
+            ],
+            'Instances': [
+                {
+                    'AmiLaunchIndex': 123,
+                    'ImageId': 'string',
+                }]}]}'''
