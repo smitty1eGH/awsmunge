@@ -57,6 +57,8 @@ def flatten_awsret(aws_return: str) -> Dict:
          then has a separate dispatcher pushing the thread of execution
          to either a dictionary or a list handler.
     '''
+    all_your_symbols={}
+
     def type2delim(v_type: str) -> str:
         '''Return character based upon V_TYPE
 
@@ -88,20 +90,20 @@ def flatten_awsret(aws_return: str) -> Dict:
     def _descend_list(alist: List)-> None:
         '''Descend() will encounter a list. do that.
         '''
-        for i,v in enumerate(alist):
+        for _,v in enumerate(alist):
             t=_descend_dispatch(v)
 
     def descend(d: Dict) -> None:
-        '''Descend a structure known to start as a dictionary.
+        '''Descend a structure known to be a Dict at the top level.
         '''
         current=[]
         t=''
         for k,v in d.items():
+            all_your_symbols.append(k)
             t=_descend_dispatch(v)
             if t in [",",":"]:
                 current.append('%s%s' % (k,t))
-        current.append('%s.%s' % (k,t))
-        print(''.join(current))
 
     d: dict=awsret2dict(aws_return)
     descend(d)
+    print(all_your_symbols)
